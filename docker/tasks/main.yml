@@ -1,0 +1,11 @@
+---
+# tasks file for docker
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Add user(s) to docker group
+  user:
+    name: '{{ item }}'
+    groups: docker
+    append: true
+  loop: '{{ docker_users }}'

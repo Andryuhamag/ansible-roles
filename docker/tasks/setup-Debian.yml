@@ -1,0 +1,50 @@
+---
+#- name: Debian OS | Ensure old versions of Docker are not installed
+#  package:
+#    name:
+#      - docker
+#      - docker-engine
+#      - docker.io
+#      - containerd
+#      - runc
+#    state: absent
+
+#- name: Debian OS | Ensure dependencies are installed
+#  apt:
+#    name:
+#      - ca-certificates
+#      - curl
+#      - gnupg
+#      - lsb-release
+#    state: present
+#    update_cache: yes
+- name: Debian OS | Ensure old versions of Docker are not installed
+  package:
+    name: '{{ docker_deprecated_packages }}'
+    state: absent
+    purge: true
+
+
+- name: Debian OS | Ensure dependencies are installed
+  package:
+    name: '{{ docker_required_packages }}'
+    state: present
+    update_cache: true
+
+- name: Debian OS | Ensure docker GPG key added
+  apt_key:
+    url: '{{ docker_base_url }}/gpg'
+    state: present
+
+- name: Debian OS | Ensure docker repository added
+  apt_repository:
+    repo: '{{ docker_repository }}'
+    state: present
+    mode: 0644
+
+- name:  Debian OS | Ensure docker packages are installed
+  package:
+    name: '{{ docker_packages }}'
+    state: present
+    update_cache: true
+  notify: "Add user(s) to docker group"
